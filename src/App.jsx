@@ -46,6 +46,11 @@ function App() {
   async function handleSubmit(event) {
     event.preventDefault()
 
+    setWeather(null)
+    setForecast([])
+    setForecastError('')
+    setIsForecastLoading(false)
+
     const cityName = city.trim()
 
     if (!cityName) {
@@ -65,8 +70,6 @@ function App() {
 
     setIsLoading(true)
     setError('')
-    setForecast([])
-    setForecastError('')
 
     try {
       const response = await fetch(
