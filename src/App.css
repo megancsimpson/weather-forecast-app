@@ -62,10 +62,16 @@
   transform: scale(0.7);
 }
 
-.weather-card {
+.weather-content {
   width: min(100%, 920px);
   position: relative;
   z-index: 1;
+  display: grid;
+  gap: 18px;
+}
+
+.weather-card {
+  width: 100%;
   padding: 56px;
   text-align: center;
   background: rgb(255 255 255 / 88%);
@@ -73,6 +79,42 @@
   border-radius: 8px;
   box-shadow: 0 25px 65px rgb(26 82 120 / 24%);
   backdrop-filter: blur(12px);
+}
+
+.app-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding: 14px 18px;
+  color: #eaf8ff;
+  font-size: 0.76rem;
+  line-height: 1.4;
+  background: rgb(16 93 143 / 42%);
+  border: 1px solid rgb(255 255 255 / 30%);
+  border-radius: 6px;
+}
+
+.app-footer p {
+  margin: 0;
+}
+
+.app-footer a {
+  color: #fff;
+  font-weight: 700;
+  text-decoration-color: rgb(255 255 255 / 55%);
+  text-underline-offset: 3px;
+  transition: color 160ms ease, text-decoration-color 160ms ease;
+}
+
+.app-footer a:hover {
+  color: #ffe58b;
+  text-decoration-color: currentcolor;
+}
+
+.app-footer a:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
 }
 
 .weather-icon {
@@ -474,6 +516,13 @@ h1 {
 
   .weather-card {
     padding: 40px 24px;
+  }
+
+  .app-footer {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 7px;
+    padding: 14px 16px;
   }
 
   .search-form {

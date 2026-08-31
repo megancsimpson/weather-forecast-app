@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import CurrentWeather from './components/CurrentWeather.jsx'
+import Footer from './components/Footer.jsx'
 import Forecast from './components/Forecast.jsx'
 import SearchBar from './components/SearchBar.jsx'
 import { getCountryCode } from './utils/countries.js'
@@ -125,59 +126,62 @@ function App() {
         <span className="sun"></span>
       </div>
 
-      <section className="weather-card" aria-labelledby="weather-title">
-        <div className="weather-icon" aria-hidden="true">
-          <span className="weather-icon__sun"></span>
-          <span className="weather-icon__cloud"></span>
-        </div>
-        <p className="eyebrow">Your daily outlook</p>
-        <h1 id="weather-title">Weather Forecast</h1>
-        <p className="intro">
-          Search any city to see its current conditions and forecast.
-        </p>
+      <div className="weather-content">
+        <section className="weather-card" aria-labelledby="weather-title">
+          <div className="weather-icon" aria-hidden="true">
+            <span className="weather-icon__sun"></span>
+            <span className="weather-icon__cloud"></span>
+          </div>
+          <p className="eyebrow">Your daily outlook</p>
+          <h1 id="weather-title">Weather Forecast</h1>
+          <p className="intro">
+            Search any city to see its current conditions and forecast.
+          </p>
 
-        <SearchBar
-          city={city}
-          country={country}
-          onCityChange={setCity}
-          onCountryChange={setCountry}
-          onSearch={handleSubmit}
-          isLoading={isLoading}
-        />
+          <SearchBar
+            city={city}
+            country={country}
+            onCityChange={setCity}
+            onCountryChange={setCountry}
+            onSearch={handleSubmit}
+            isLoading={isLoading}
+          />
 
-        <div className="weather-result" aria-live="polite">
-          {isLoading && <p className="status-message">Finding the latest weather...</p>}
+          <div className="weather-result" aria-live="polite">
+            {isLoading && <p className="status-message">Finding the latest weather...</p>}
 
-          {!isLoading && error && <p className="status-message status-message--error">{error}</p>}
+            {!isLoading && error && <p className="status-message status-message--error">{error}</p>}
 
-          {!isLoading && !error && !weather && (
-            <div className="empty-state">
-              <span className="empty-state__icon" aria-hidden="true">?</span>
-              <p>Search for a city to view the weather.</p>
-            </div>
-          )}
+            {!isLoading && !error && !weather && (
+              <div className="empty-state">
+                <span className="empty-state__icon" aria-hidden="true">?</span>
+                <p>Search for a city to view the weather.</p>
+              </div>
+            )}
 
-          {!isLoading && weather && (
-            <CurrentWeather
-              weather={weather}
-              unit={unit}
-              onUnitChange={setUnit}
-              formatTemperature={formatTemperature}
-            />
-          )}
+            {!isLoading && weather && (
+              <CurrentWeather
+                weather={weather}
+                unit={unit}
+                onUnitChange={setUnit}
+                formatTemperature={formatTemperature}
+              />
+            )}
 
-          {!isLoading && weather && (
-            <Forecast
-              forecast={forecast}
-              timezone={weather.timezone}
-              unit={unit}
-              formatTemperature={formatTemperature}
-              isLoading={isForecastLoading}
-              error={forecastError}
-            />
-          )}
-        </div>
-      </section>
+            {!isLoading && weather && (
+              <Forecast
+                forecast={forecast}
+                timezone={weather.timezone}
+                unit={unit}
+                formatTemperature={formatTemperature}
+                isLoading={isForecastLoading}
+                error={forecastError}
+              />
+            )}
+          </div>
+        </section>
+        <Footer />
+      </div>
     </main>
   )
 }
