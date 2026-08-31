@@ -2,6 +2,7 @@ import { useState } from 'react'
 import CurrentWeather from './components/CurrentWeather.jsx'
 import Forecast from './components/Forecast.jsx'
 import SearchBar from './components/SearchBar.jsx'
+import { getCountryCode } from './utils/countries.js'
 import './App.css'
 
 function getDailyForecast(forecastList, timezoneOffset) {
@@ -33,6 +34,7 @@ function formatTemperature(celsius, unit) {
 
 function App() {
   const [city, setCity] = useState('')
+  const [country, setCountry] = useState('')
   const [unit, setUnit] = useState('celsius')
   const [weather, setWeather] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -51,6 +53,16 @@ function App() {
       return
     }
 
+    const countryName = country.trim()
+    const countryCode = countryName ? getCountryCode(countryName) : ''
+
+    if (countryName && !countryCode) {
+      setError('We do not recognize that country. Try a two-letter country code instead.')
+      return
+    }
+
+    const location = countryCode ? `${cityName},${countryCode}` : cityName
+
     setIsLoading(true)
     setError('')
     setForecast([])
@@ -58,11 +70,15 @@ function App() {
 
     try {
       const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(cityName)}&units=metric&appid=${import.meta.env.VITE_OPENWEATHER_API_KEY}`,
+        `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(location)}&units=metric&appid=${import.meta.env.VITE_OPENWEATHER_API_KEY}`,
       )
 
       if (response.status === 404) {
-        setError(`We could not find "${cityName}". Check the spelling and try again.`)
+        if (countryName) {
+          setError(`We could not find "${cityName}" in ${countryName}. Check the country, or leave it blank to search by city only.`)
+        } else {
+          setError(`We could not find "${cityName}". Check the spelling and try again.`)
+        }
         return
       }
 
@@ -119,7 +135,9 @@ function App() {
 
         <SearchBar
           city={city}
+          country={country}
           onCityChange={setCity}
+          onCountryChange={setCountry}
           onSearch={handleSubmit}
           isLoading={isLoading}
         />

@@ -150,12 +150,34 @@ h1 {
 
 .search-form {
   display: flex;
+  flex-direction: column;
   gap: 10px;
+}
+
+.search-field {
+  width: 100%;
+  min-width: 0;
+  text-align: left;
+}
+
+.search-field label {
+  display: block;
+  margin: 0 0 5px;
+  color: #527083;
+  font-size: 0.78rem;
+}
+
+.search-field p {
+  min-height: 1.25em;
+  margin: 5px 0 0;
+  color: #628093;
+  font-size: 0.7rem;
+  line-height: 1.25;
 }
 
 .search-form input {
   min-width: 0;
-  flex: 1;
+  width: 100%;
   padding: 15px 16px;
   color: #173d59;
   font: inherit;
@@ -455,7 +477,7 @@ h1 {
   }
 
   .search-form {
-    flex-direction: column;
+    align-items: stretch;
   }
 
   .search-form button {
