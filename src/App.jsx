@@ -19,8 +19,18 @@ function getDailyForecast(forecastList, timezoneOffset) {
     .map(({ forecast }) => forecast)
 }
 
+function formatTemperature(celsius, unit) {
+  const temperature = unit === 'fahrenheit'
+    ? (celsius * 9) / 5 + 32
+    : celsius
+  const symbol = unit === 'fahrenheit' ? 'F' : 'C'
+
+  return `${Math.round(temperature)}°${symbol}`
+}
+
 function App() {
   const [city, setCity] = useState('')
+  const [unit, setUnit] = useState('celsius')
   const [weather, setWeather] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
@@ -135,6 +145,24 @@ function App() {
 
           {!isLoading && weather && (
             <section className="conditions" aria-label="Current weather">
+              <div className="unit-toggle" role="group" aria-label="Temperature unit">
+                <button
+                  type="button"
+                  className={unit === 'celsius' ? 'unit-toggle__button unit-toggle__button--active' : 'unit-toggle__button'}
+                  aria-pressed={unit === 'celsius'}
+                  onClick={() => setUnit('celsius')}
+                >
+                  °C
+                </button>
+                <button
+                  type="button"
+                  className={unit === 'fahrenheit' ? 'unit-toggle__button unit-toggle__button--active' : 'unit-toggle__button'}
+                  aria-pressed={unit === 'fahrenheit'}
+                  onClick={() => setUnit('fahrenheit')}
+                >
+                  °F
+                </button>
+              </div>
               <div className="conditions__heading">
                 <div>
                   <h2>{weather.name}, {weather.sys.country}</h2>
@@ -145,9 +173,9 @@ function App() {
                   alt={weather.weather[0].description}
                 />
               </div>
-              <p className="temperature">{Math.round(weather.main.temp)}&deg;C</p>
+              <p className="temperature">{formatTemperature(weather.main.temp, unit)}</p>
               <div className="weather-details">
-                <p><span>Feels like</span>{Math.round(weather.main.feels_like)}&deg;C</p>
+                <p><span>Feels like</span>{formatTemperature(weather.main.feels_like, unit)}</p>
                 <p><span>Humidity</span>{weather.main.humidity}%</p>
                 <p><span>Wind speed</span>{weather.wind.speed} m/s</p>
               </div>
@@ -181,7 +209,9 @@ function App() {
                         alt={day.weather[0].description}
                       />
                       <p className="forecast-card__description">{day.weather[0].description}</p>
-                      <p className="forecast-card__temperature">{Math.round(day.main.temp)}&deg;C</p>
+                      <p className="forecast-card__temperature">
+                        {formatTemperature(day.main.temp, unit)}
+                      </p>
                       <p className="forecast-card__detail">Humidity {day.main.humidity}%</p>
                     </article>
                   ))}
