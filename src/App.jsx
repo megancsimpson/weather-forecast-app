@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import CurrentWeather from './components/CurrentWeather.jsx'
+import Forecast from './components/Forecast.jsx'
+import SearchBar from './components/SearchBar.jsx'
 import './App.css'
 
 function getDailyForecast(forecastList, timezoneOffset) {
@@ -114,22 +117,12 @@ function App() {
           Search any city to see its current conditions and forecast.
         </p>
 
-        <form className="search-form" onSubmit={handleSubmit}>
-          <label className="sr-only" htmlFor="city">
-            City name
-          </label>
-          <input
-            id="city"
-            name="city"
-            type="text"
-            placeholder="Enter a city name"
-            value={city}
-            onChange={(event) => setCity(event.target.value)}
-          />
-          <button type="submit" disabled={isLoading}>
-            {isLoading ? 'Searching...' : 'Search'}
-          </button>
-        </form>
+        <SearchBar
+          city={city}
+          onCityChange={setCity}
+          onSearch={handleSubmit}
+          isLoading={isLoading}
+        />
 
         <div className="weather-result" aria-live="polite">
           {isLoading && <p className="status-message">Finding the latest weather...</p>}
@@ -144,80 +137,23 @@ function App() {
           )}
 
           {!isLoading && weather && (
-            <section className="conditions" aria-label="Current weather">
-              <div className="unit-toggle" role="group" aria-label="Temperature unit">
-                <button
-                  type="button"
-                  className={unit === 'celsius' ? 'unit-toggle__button unit-toggle__button--active' : 'unit-toggle__button'}
-                  aria-pressed={unit === 'celsius'}
-                  onClick={() => setUnit('celsius')}
-                >
-                  °C
-                </button>
-                <button
-                  type="button"
-                  className={unit === 'fahrenheit' ? 'unit-toggle__button unit-toggle__button--active' : 'unit-toggle__button'}
-                  aria-pressed={unit === 'fahrenheit'}
-                  onClick={() => setUnit('fahrenheit')}
-                >
-                  °F
-                </button>
-              </div>
-              <div className="conditions__heading">
-                <div>
-                  <h2>{weather.name}, {weather.sys.country}</h2>
-                  <p>{weather.weather[0].description}</p>
-                </div>
-                <img
-                  src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
-                  alt={weather.weather[0].description}
-                />
-              </div>
-              <p className="temperature">{formatTemperature(weather.main.temp, unit)}</p>
-              <div className="weather-details">
-                <p><span>Feels like</span>{formatTemperature(weather.main.feels_like, unit)}</p>
-                <p><span>Humidity</span>{weather.main.humidity}%</p>
-                <p><span>Wind speed</span>{weather.wind.speed} m/s</p>
-              </div>
-            </section>
+            <CurrentWeather
+              weather={weather}
+              unit={unit}
+              onUnitChange={setUnit}
+              formatTemperature={formatTemperature}
+            />
           )}
 
           {!isLoading && weather && (
-            <section className="forecast-section" aria-labelledby="forecast-title">
-              <h2 id="forecast-title">5-Day Forecast</h2>
-
-              {isForecastLoading && (
-                <p className="status-message">Loading the five-day forecast...</p>
-              )}
-
-              {!isForecastLoading && forecastError && (
-                <p className="status-message status-message--error">{forecastError}</p>
-              )}
-
-              {!isForecastLoading && !forecastError && forecast.length > 0 && (
-                <div className="forecast-grid">
-                  {forecast.map((day) => (
-                    <article className="forecast-card" key={day.dt}>
-                      <h3>
-                        {new Date((day.dt + weather.timezone) * 1000).toLocaleDateString(
-                          'en-US',
-                          { weekday: 'short', timeZone: 'UTC' },
-                        )}
-                      </h3>
-                      <img
-                        src={`https://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`}
-                        alt={day.weather[0].description}
-                      />
-                      <p className="forecast-card__description">{day.weather[0].description}</p>
-                      <p className="forecast-card__temperature">
-                        {formatTemperature(day.main.temp, unit)}
-                      </p>
-                      <p className="forecast-card__detail">Humidity {day.main.humidity}%</p>
-                    </article>
-                  ))}
-                </div>
-              )}
-            </section>
+            <Forecast
+              forecast={forecast}
+              timezone={weather.timezone}
+              unit={unit}
+              formatTemperature={formatTemperature}
+              isLoading={isForecastLoading}
+              error={forecastError}
+            />
           )}
         </div>
       </section>
