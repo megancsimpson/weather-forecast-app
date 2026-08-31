@@ -1,11 +1,32 @@
 import { useState } from 'react'
 import './App.css'
 
+function getDailyForecast(forecastList, timezoneOffset) {
+  const forecastsByDay = {}
+
+  forecastList.forEach((forecast) => {
+    const localDate = new Date((forecast.dt + timezoneOffset) * 1000)
+    const dayKey = localDate.toISOString().slice(0, 10)
+    const hoursFromNoon = Math.abs(localDate.getUTCHours() - 12)
+
+    if (!forecastsByDay[dayKey] || hoursFromNoon < forecastsByDay[dayKey].hoursFromNoon) {
+      forecastsByDay[dayKey] = { forecast, hoursFromNoon }
+    }
+  })
+
+  return Object.values(forecastsByDay)
+    .slice(0, 5)
+    .map(({ forecast }) => forecast)
+}
+
 function App() {
   const [city, setCity] = useState('')
   const [weather, setWeather] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [forecast, setForecast] = useState([])
+  const [isForecastLoading, setIsForecastLoading] = useState(false)
+  const [forecastError, setForecastError] = useState('')
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -19,6 +40,8 @@ function App() {
 
     setIsLoading(true)
     setError('')
+    setForecast([])
+    setForecastError('')
 
     try {
       const response = await fetch(
@@ -36,6 +59,25 @@ function App() {
 
       const weatherData = await response.json()
       setWeather(weatherData)
+      setIsLoading(false)
+      setIsForecastLoading(true)
+
+      try {
+        const forecastResponse = await fetch(
+          `https://api.openweathermap.org/data/2.5/forecast?lat=${weatherData.coord.lat}&lon=${weatherData.coord.lon}&units=metric&appid=${import.meta.env.VITE_OPENWEATHER_API_KEY}`,
+        )
+
+        if (!forecastResponse.ok) {
+          throw new Error('Forecast request failed')
+        }
+
+        const forecastData = await forecastResponse.json()
+        setForecast(getDailyForecast(forecastData.list, forecastData.city.timezone))
+      } catch {
+        setForecastError('The five-day forecast is unavailable right now. Please try again later.')
+      } finally {
+        setIsForecastLoading(false)
+      }
     } catch {
       setError('Weather is unavailable right now. Please try again in a moment.')
     } finally {
@@ -109,6 +151,42 @@ function App() {
                 <p><span>Humidity</span>{weather.main.humidity}%</p>
                 <p><span>Wind speed</span>{weather.wind.speed} m/s</p>
               </div>
+            </section>
+          )}
+
+          {!isLoading && weather && (
+            <section className="forecast-section" aria-labelledby="forecast-title">
+              <h2 id="forecast-title">5-Day Forecast</h2>
+
+              {isForecastLoading && (
+                <p className="status-message">Loading the five-day forecast...</p>
+              )}
+
+              {!isForecastLoading && forecastError && (
+                <p className="status-message status-message--error">{forecastError}</p>
+              )}
+
+              {!isForecastLoading && !forecastError && forecast.length > 0 && (
+                <div className="forecast-grid">
+                  {forecast.map((day) => (
+                    <article className="forecast-card" key={day.dt}>
+                      <h3>
+                        {new Date((day.dt + weather.timezone) * 1000).toLocaleDateString(
+                          'en-US',
+                          { weekday: 'short', timeZone: 'UTC' },
+                        )}
+                      </h3>
+                      <img
+                        src={`https://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`}
+                        alt={day.weather[0].description}
+                      />
+                      <p className="forecast-card__description">{day.weather[0].description}</p>
+                      <p className="forecast-card__temperature">{Math.round(day.main.temp)}&deg;C</p>
+                      <p className="forecast-card__detail">Humidity {day.main.humidity}%</p>
+                    </article>
+                  ))}
+                </div>
+              )}
             </section>
           )}
         </div>
