@@ -56,7 +56,7 @@ A React and Vite weather application that fetches live current weather and five-
 	npm run dev
 	```
 
-7. Open the local URL shown in the terminal, usually `http://localhost:5173`.
+7. Open the local URL shown in the terminal
 
 Do not commit `.env` to GitHub. Your actual API key must never be shared or included in source code, screenshots, or documentation.
 
@@ -69,6 +69,12 @@ npm run dev
 Starts the Vite development server.
 
 ```bash
+npm run lint
+```
+
+Checks the project for JavaScript and React issues using Oxlint.
+
+```bash
 npm run build
 ```
 
@@ -79,11 +85,18 @@ Creates an optimized production build in the `dist` folder.
 ```text
 weather-forecast-app/
 ├── public/                    # Public files served directly by Vite
+│   ├── favicon.svg            # Browser tab icon
+│   └── icons.svg              # Shared weather icons
+├── index.html                 # Vite HTML entry point
 ├── src/
 │   ├── assets/                # Project image and visual assets
+│   │   ├── hero.png           # Weather app hero image
+│   │   ├── react.svg          # React asset
+│   │   └── vite.svg           # Vite asset
 │   ├── components/
 │   │   ├── CurrentWeather.jsx # Displays current weather details and icon
 │   │   ├── Forecast.jsx       # Displays five-day forecast cards and feedback
+│   │   ├── Footer.jsx         # Displays the app footer
 │   │   ├── SearchBar.jsx      # City and optional country search fields
 │   │   └── UnitToggle.jsx     # Celsius/Fahrenheit toggle control
 │   ├── utils/
@@ -101,10 +114,14 @@ weather-forecast-app/
 
 The app uses the OpenWeatherMap API for current weather conditions and the five-day forecast. Weather requests use the selected city and, when provided, a resolved two-letter country code.
 
-## Live Demo
+## Deployment
 
-Deployment link: Coming soon
+Deployed through Netlify : https://megansweatherforecast.netlify.app/
 
 ## Author
 
-Your Name
+Megan Simpson
+https://www.linkedin.com/in/megancsimpson/
+Revelstoke, BC, Canada
+Software Development Student 
+Circuit Stream 
